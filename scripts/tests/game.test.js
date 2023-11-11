@@ -4,7 +4,6 @@
 
 const { game, newGame, showScore, addTurn, lightsOn, showTurns } = require("../game");
 
-
 beforeAll(() => {
     let fs = require("fs");
     let fileContents = fs.readFileSync("index.html", "utf-8");
@@ -32,10 +31,9 @@ describe("game object contains correct keys", () => {
     test("turnNumber key exists", () => {
         expect("turnNumber" in game).toBe(true);
     });
-    
 });
 
-describe ("newGame works correctly", () => {
+describe("newGame works correctly", () => {
     beforeAll(() => {
         game.score = 42;
         game.playerMoves = ["button1", "button2"];
@@ -43,17 +41,24 @@ describe ("newGame works correctly", () => {
         document.getElementById("score").innerText = "42";
         newGame();
     });
-    test ("should set game score to zero", () => {
+    test("should set game score to zero", () => {
         expect(game.score).toEqual(0);
     });
-    test ("should be one move in the computer's game array", () => {
-        expect(game.currentGame.length).toBe(1);
-    })
-    test ("should clear the player moves array", () => {
+    test("should display 0 for the element with id of score", () => {
+        expect(document.getElementById("score").innerText).toEqual(0);
+    });
+    test("should clear the player moves array", () => {
         expect(game.playerMoves.length).toBe(0);
     });
-    test("should display 0 for the element", () => {
-        expect(document.getElementById("score").innerText).toEqual(0); 
+    test("should add one move to the computer's game array", () => {
+        expect(game.currentGame.length).toBe(1);
+    });
+    test("expect data-listener to be true", () => {
+        newGame();
+        const elements = document.getElementsByClassName("circle");
+        for (let element of elements) {
+            expect(element.getAttribute("data-listener")).toEqual("true");
+        }
     });
 });
 
@@ -69,13 +74,18 @@ describe("gameplay works correctly", () => {
         game.currentGame = [];
         game.playerMoves = [];
     });
-    test ("addTurn adds a new turn to the game", () => {
+    test("addTurn adds a new turn to the game", () => {
         addTurn();
         expect(game.currentGame.length).toBe(2);
     });
-    test ("should add correct class to light up the buttons", () => {
+    test("should add correct class to light up the buttons", () => {
         let button = document.getElementById(game.currentGame[0]);
         lightsOn(game.currentGame[0]);
-        expect (button.classList).toContain("light");
-    })
+        expect(button.classList).toContain(game.currentGame[0] + "light");
+    });
+    test("showTurns should update game.turnNumber", () => {
+        game.turnNumber = 42;
+        showTurns();
+        expect(game.turnNumber).toBe(0);
+    });
 });
